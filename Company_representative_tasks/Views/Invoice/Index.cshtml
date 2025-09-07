@@ -1,0 +1,30 @@
+@model IEnumerable<Company_representative_tasks.Models.Invoice>
+
+@{
+    ViewData["Title"] = "Invoices";
+}
+
+<h2>Invoices</h2>
+<div class="table-responsive">
+<table class="table table-striped align-middle mb-0">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Number)</th>
+            <th>@Html.DisplayNameFor(model => model.Amount)</th>
+            <th>@Html.DisplayNameFor(model => model.Date)</th>
+            <th>@Html.DisplayNameFor(model => model.User.Email)</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Number)</td>
+            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+            <td>@Html.DisplayFor(modelItem => item.Date)</td>
+            <td>@Html.DisplayFor(modelItem => item.User.Email)</td>
+        </tr>
+    }
+    </tbody>
+ </table>
+</div>

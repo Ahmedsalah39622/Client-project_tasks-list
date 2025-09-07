@@ -1,0 +1,54 @@
+@model IEnumerable<Company_representative_tasks.Models.User>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+<div class="text-end mb-3">
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+</div>
+<h2>Admin Dashboard</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Email</th>
+            <th>Tasks</th>
+            <th>Invoices</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Name</td>
+            <td>@user.Email</td>
+            <td>
+                <ul>
+                @foreach (var task in user.Tasks ?? new List<Company_representative_tasks.Models.Task>())
+                {
+                    <li>@task.Title</li>
+                }
+                </ul>
+            </td>
+            <td>
+                <ul>
+                @foreach (var invoice in user.Invoices ?? new List<Company_representative_tasks.Models.Invoice>())
+                {
+                    <li>@invoice.Number</li>
+                }
+                </ul>
+            </td>
+            <td>
+                <ul>
+                @foreach (var note in user.Notes ?? new List<Company_representative_tasks.Models.Note>())
+                {
+                    <li>@note.Content</li>
+                }
+                </ul>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
