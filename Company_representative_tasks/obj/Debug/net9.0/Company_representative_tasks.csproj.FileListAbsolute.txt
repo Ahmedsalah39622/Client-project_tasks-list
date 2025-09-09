@@ -332,3 +332,4 @@ C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\Company_repre
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\Company_representative_tasks\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\Company_representative_tasks\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\Company_representative_tasks\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
+C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\Company_representative_tasks\obj\Debug\net9.0\Company_representative_tasks.sourcelink.json
