@@ -1,0 +1,63 @@
+dotnet publish -c Release -o ./publish
+
+dotnet build Company_representative_tasks/Company_representative_tasks.csproj
+
+dotnet run --project Company_representative_tasks/Company_representative_tasks.csproj
+
+
+CREATE TABLE dbo.__EFMigrationsHistory (
+    MigrationId NVARCHAR(150) PRIMARY KEY,
+    ProductVersion NVARCHAR(32)
+);
+
+CREATE TABLE dbo.Invoices (
+    Id INT PRIMARY KEY,
+    Content NVARCHAR(255),
+    CreatedAt DATETIME,
+    UserId INT
+);
+
+CREATE TABLE dbo.Notes (
+    Id INT PRIMARY KEY,
+    NoteFor NVARCHAR(255),
+    CreatedAt DATETIME,
+    UserId INT
+);
+
+CREATE TABLE dbo.Tasks (
+    Id INT PRIMARY KEY,
+    Title NVARCHAR(255),
+    Description NVARCHAR(255),
+    DueDate DATETIME,
+    UserId INT
+);
+
+CREATE TABLE dbo.UserLogs (
+    Id INT PRIMARY KEY,
+    EventType NVARCHAR(50),
+    EventTime DATETIME,
+    UserEmail NVARCHAR(255)
+);
+
+CREATE TABLE dbo.Users (
+    Id INT PRIMARY KEY,
+    Name NVARCHAR(100),
+    Email NVARCHAR(255),
+    PasswordHash NVARCHAR(255),
+    Role NVARCHAR(50)
+);
+
+
+
+
+Replace MigrationName with a descriptive name for your migration, such as AddGreetingToDashboard.
+
+dotnet ef migrations add MigrationName
+
+To update the database after creating the migration, use:
+
+dotnet ef database update
+
+Make sure you have the dotnet-ef tool installed. If not, install it with:
+
+dotnet tool install --global dotnet-ef
