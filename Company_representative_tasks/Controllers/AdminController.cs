@@ -62,14 +62,15 @@ namespace Company_representative_tasks.Controllers
         [HttpPost]
         public IActionResult GenerateNgrokLink()
         {
-            string ngrokPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "ngrok.exe");
+            string ngrokPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "tools", "ngrok", "ngrok.exe");
+            string ngrokConfig = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "tools", "ngrok", "ngrok.yml");
             string outputFile = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "ngrok_output.txt");
             try
             {
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.FileName = ngrokPath;
-                process.StartInfo.Arguments = "http 5050 --config ngrok.yml"; // Force use of local config
-                process.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+                process.StartInfo.Arguments = $"http 5000 --config \"{ngrokConfig}\"";
+                process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(ngrokPath);
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.RedirectStandardOutput = true;
