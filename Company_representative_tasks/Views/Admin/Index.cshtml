@@ -19,6 +19,12 @@
         <button type="submit" class="btn btn-warning">Stop Public link</button>
     </form>
 </div>
+@if (ViewBag.AdminName != null)
+{
+    <div class="alert alert-success text-center" role="alert">
+        Welcome, <strong>@ViewBag.AdminName</strong>!
+    </div>
+}
 <h2>Admin Dashboard</h2>
 <div class="mb-2">
     <strong>Status:</strong> @ViewBag.NgrokStatus

@@ -22,10 +22,20 @@ namespace Company_representative_tasks.Controllers
                 .Include(a => a.Notes)
                 .ToListAsync();
 
+            // Get current admin name from session
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId != null)
+            {
+                var admin = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (admin != null)
+                {
+                    ViewBag.AdminName = admin.Name;
+                }
+            }
+
             // Check if ngrok is running
             bool isNgrokRunning = System.Diagnostics.Process.GetProcessesByName("ngrok").Any();
             ViewBag.NgrokStatus = isNgrokRunning ? "Agent Public Link is running" : "Agent Public Link is not running";
-
 
             // Try to get the public ngrok URL using the ngrok API
             try

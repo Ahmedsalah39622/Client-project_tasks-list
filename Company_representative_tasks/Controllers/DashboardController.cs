@@ -24,19 +24,19 @@ namespace Company_representative_tasks.Controllers
             // Require login for dashboard
             var userId = HttpContext.Session.GetInt32("UserId");
                 if (userId == null) return RedirectToAction("Login", "Account");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return RedirectToAction("Login", "Account");
+            if (user.Role == "Admin")
+            {
+                return RedirectToAction("Index", "Admin");
+            }
             var viewModel = new DashboardViewModel
             {
                 Tasks = await _context.Tasks.Include(t => t.User).Where(t => t.UserId == userId).ToListAsync(),
                 Invoices = await _context.Invoices.Include(i => i.User).Where(i => i.UserId == userId).ToListAsync(),
-                Notes = await _context.Notes.Include(n => n.User).Where(n => n.UserId == userId).ToListAsync()
+                Notes = await _context.Notes.Include(n => n.User).Where(n => n.UserId == userId).ToListAsync(),
+                UserName = user.Name
             };
-                // If admin, redirect to admin dashboard
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-                if (user == null) return RedirectToAction("Login", "Account");
-                if (user.Role == "Admin")
-                {
-                    return RedirectToAction("Index", "Admin");
-                }
             return View(viewModel);
         }
 
