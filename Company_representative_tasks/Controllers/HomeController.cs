@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Company_representative_tasks.Models;
+using Argent_Company.Models;
 
-namespace Company_representative_tasks.Controllers;
+namespace Argent_Company.Controllers;
 
 public class HomeController : Controller
 {

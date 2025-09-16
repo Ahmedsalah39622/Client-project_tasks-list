@@ -1,10 +1,7 @@
-@model IEnumerable<Company_representative_tasks.Models.User>
+@model IEnumerable<Argent_Company.Models.User>
 @{
     ViewData["Title"] = "Admin Dashboard";
-    if (ViewBag.CloudflaredLink == null)
-    {
-        <meta http-equiv="refresh" content="5">
-    }
+    // Removed auto-refresh meta tag to prevent page from refreshing every 5 seconds
 }
 <div class="text-end mb-3">
     <form asp-controller="Account" asp-action="Logout" method="post">
@@ -26,6 +23,38 @@
     </div>
 }
 <h2>Admin Dashboard</h2>
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">Add Task for Agent</div>
+    <div class="card-body">
+        <form asp-controller="Admin" asp-action="AddTask" method="post" class="row g-2 align-items-end">
+            <div class="col-12 col-md-3">
+                <label for="AgentId" class="form-label">Agent</label>
+                <select class="form-select" id="AgentId" name="AgentId" required>
+                    <option value="">Select agent...</option>
+                    @foreach (var agent in Model.Where(u => u.Role == "Agent"))
+                    {
+                        <option value="@agent.Id">@agent.Name (@agent.Email)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <label for="Title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="Title" name="Title" required />
+            </div>
+            <div class="col-12 col-md-3">
+                <label for="Description" class="form-label">Description</label>
+                <input type="text" class="form-control" id="Description" name="Description" />
+            </div>
+            <div class="col-12 col-md-2">
+                <label for="DueDate" class="form-label">Due Date</label>
+                <input type="date" class="form-control" id="DueDate" name="DueDate" required />
+            </div>
+            <div class="col-12 col-md-1">
+                <button type="submit" class="btn btn-success w-100">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
 <div class="mb-2">
     <strong>Status:</strong> @ViewBag.NgrokStatus
 </div>
@@ -39,47 +68,133 @@
         Agents Link: <a href="@ViewBag.NgrokLink" target="_blank">@ViewBag.NgrokLink</a>
     </div>
 }
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>User Name</th>
-            <th>Email</th>
-            <th>Tasks</th>
-            <th>Invoices</th>
-            <th>Notes</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="d-none d-md-block">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Tasks</th>
+                <th>Invoices</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>
+                    <ul class="list-unstyled">
+                    @foreach (var task in user.Tasks ?? new List<Argent_Company.Models.Task>())
+                    {
+                        <li class="d-flex align-items-center justify-content-between mb-1">
+                            <span>@task.Title</span>
+                            <form asp-controller="Admin" asp-action="RemoveTask" method="post" style="display:inline;">
+                                <input type="hidden" name="TaskId" value="@task.Id" />
+                                <button type="submit" class="btn btn-sm btn-danger ms-2" title="Remove Task">&times;</button>
+                            </form>
+                        </li>
+                    }
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                    @foreach (var invoice in user.Invoices ?? new List<Argent_Company.Models.Invoice>())
+                    {
+                        <li>@invoice.Number</li>
+                    }
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                    @foreach (var note in user.Notes ?? new List<Argent_Company.Models.Note>())
+                    {
+                        <li>@note.Content</li>
+                    }
+                    </ul>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<!-- Responsive cards for mobile -->
+<div class="d-md-none">
+    @{ var i = 0; }
     @foreach (var user in Model)
     {
-        <tr>
-            <td>@user.Name</td>
-            <td>@user.Email</td>
-            <td>
-                <ul>
-                @foreach (var task in user.Tasks ?? new List<Company_representative_tasks.Models.Task>())
-                {
-                    <li>@task.Title</li>
-                }
-                </ul>
-            </td>
-            <td>
-                <ul>
-                @foreach (var invoice in user.Invoices ?? new List<Company_representative_tasks.Models.Invoice>())
-                {
-                    <li>@invoice.Number</li>
-                }
-                </ul>
-            </td>
-            <td>
-                <ul>
-                @foreach (var note in user.Notes ?? new List<Company_representative_tasks.Models.Note>())
-                {
-                    <li>@note.Content</li>
-                }
-                </ul>
-            </td>
-        </tr>
+        var collapseIdTasks = $"tasksCollapse_{user.Id}";
+        var collapseIdInvoices = $"invoicesCollapse_{user.Id}";
+        var collapseIdNotes = $"notesCollapse_{user.Id}";
+        var puzzleClass = i % 2 == 0 ? "puzzle-piece-left" : "puzzle-piece-right";
+        <div class="card mb-3 shadow-sm @puzzleClass" style="position:relative;">
+            <div class="card-header bg-primary text-white">
+                <strong>@user.Name</strong> <span class="text-light small">(@user.Email)</span>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <button class="btn btn-outline-primary btn-sm w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseIdTasks">Tasks</button>
+                    <div class="collapse" id="@collapseIdTasks">
+                        <ul class="mb-2">
+                            @foreach (var task in user.Tasks ?? new List<Argent_Company.Models.Task>())
+                            {
+                                <li class="d-flex align-items-center justify-content-between mb-1">
+                                    <span>@task.Title</span>
+                                    <form asp-controller="Admin" asp-action="RemoveTask" method="post" style="display:inline;">
+                                        <input type="hidden" name="TaskId" value="@task.Id" />
+                                        <button type="submit" class="btn btn-sm btn-danger ms-2" title="Remove Task">&times;</button>
+                                    </form>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <button class="btn btn-outline-success btn-sm w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseIdInvoices">Invoices</button>
+                    <div class="collapse" id="@collapseIdInvoices">
+                        <ul class="mb-2">
+                            @foreach (var invoice in user.Invoices ?? new List<Argent_Company.Models.Invoice>())
+                            {
+                                <li>@invoice.Number</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-outline-info btn-sm w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseIdNotes">Notes</button>
+                    <div class="collapse" id="@collapseIdNotes">
+                        <ul>
+                            @foreach (var note in user.Notes ?? new List<Argent_Company.Models.Note>())
+                            {
+                                <li>@note.Content</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="sticky-action-btns">
+                <button class="btn btn-primary btn-lg rounded-circle me-2" title="Add Task"><i class="bi bi-plus"></i> T</button>
+                <button class="btn btn-success btn-lg rounded-circle" title="Add Invoice"><i class="bi bi-plus"></i> I</button>
+            </div>
+        </div>
+        i++;
     }
-    </tbody>
-</table>
+}
+<style>
+    .sticky-action-btns {
+        position: sticky;
+        bottom: 1rem;
+        right: 1rem;
+        z-index: 1050;
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        background: transparent;
+        margin-top: 1rem;
+    }
+    /* Hide sticky action buttons on desktop */
+
+</style>

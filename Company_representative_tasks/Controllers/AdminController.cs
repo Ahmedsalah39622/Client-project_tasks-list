@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Company_representative_tasks.Models;
+using Argent_Company.Models;
 using System.Linq;
 
-namespace Company_representative_tasks.Controllers
+namespace Argent_Company.Controllers
 {
     public class AdminController : Controller
     {
@@ -12,6 +12,46 @@ namespace Company_representative_tasks.Controllers
         public AdminController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddTask(int AgentId, string Title, string? Description, DateTime DueDate)
+        {
+            var agent = await _context.Users.FirstOrDefaultAsync(u => u.Id == AgentId && u.Role == "Agent");
+            if (agent == null)
+            {
+                TempData["NgrokOutput"] = "Agent not found.";
+                return RedirectToAction("Index");
+            }
+            var task = new Argent_Company.Models.Task
+            {
+                Title = Title,
+                Description = Description,
+                DueDate = DueDate,
+                UserId = agent.Id,
+                User = agent
+            };
+            _context.Tasks.Add(task);
+            await _context.SaveChangesAsync();
+            TempData["NgrokOutput"] = "Task added successfully.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveTask(int TaskId)
+        {
+            var task = await _context.Tasks.FindAsync(TaskId);
+            if (task != null)
+            {
+                _context.Tasks.Remove(task);
+                await _context.SaveChangesAsync();
+                TempData["NgrokOutput"] = "Task removed successfully.";
+            }
+            else
+            {
+                TempData["NgrokOutput"] = "Task not found.";
+            }
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Index()
@@ -67,7 +107,6 @@ namespace Company_representative_tasks.Controllers
 
             return View(users);
         }
-
 
         [HttpPost]
         public IActionResult GenerateNgrokLink()

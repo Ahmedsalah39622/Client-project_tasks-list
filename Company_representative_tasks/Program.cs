@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Argent_Company.Models;
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<Company_representative_tasks.Models.ApplicationDbContext>(options =>
+
+// Add services to the container.
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSession(); // <-- Add this before app = builder.Build()
 

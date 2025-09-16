@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Company_representative_tasks.Models;
+using Argent_Company.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Company_representative_tasks.Controllers
+namespace Argent_Company.Controllers
 {
     public class AccountController : Controller
     {

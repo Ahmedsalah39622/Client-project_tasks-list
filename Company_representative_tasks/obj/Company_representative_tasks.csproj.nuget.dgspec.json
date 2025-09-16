@@ -8,7 +8,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Users\\Ahmed Mahmoud\\Desktop\\Eng Osama Client project_tasks list\\Company_representative_tasks\\Company_representative_tasks.csproj",
-        "projectName": "Company_representative_tasks",
+        "projectName": "Argent_Company",
         "projectPath": "C:\\Users\\Ahmed Mahmoud\\Desktop\\Eng Osama Client project_tasks list\\Company_representative_tasks\\Company_representative_tasks.csproj",
         "packagesPath": "C:\\Users\\Ahmed Mahmoud\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Ahmed Mahmoud\\Desktop\\Eng Osama Client project_tasks list\\Company_representative_tasks\\obj\\",
@@ -46,15 +46,13 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[9.0.8, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[9.0.8, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",

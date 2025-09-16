@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Company_representative_tasks.Models
+namespace Argent_Company.Models
 {
     public class LoginViewModel
     {

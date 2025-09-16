@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Company_representative_tasks.Models;
-using TaskModel = Company_representative_tasks.Models.Task;
+using Argent_Company.Models;
+using TaskModel = Argent_Company.Models.Task;
 
-namespace Company_representative_tasks.Controllers
+namespace Argent_Company.Controllers
 {
     public class TaskController : Controller
     {
