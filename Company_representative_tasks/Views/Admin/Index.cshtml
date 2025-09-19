@@ -1,36 +1,36 @@
 @model IEnumerable<Argent_Company.Models.User>
 @{
-    ViewData["Title"] = "Admin Dashboard";
-    // Removed auto-refresh meta tag to prevent page from refreshing every 5 seconds
+    ViewData["Title"] = "لوحة تحكم المدير";
 }
-<div class="text-end mb-3">
+<div dir="rtl">
+<div class="text-start mb-3">
     <form asp-controller="Account" asp-action="Logout" method="post">
-        <button type="submit" class="btn btn-danger">Logout</button>
+        <button type="submit" class="btn btn-danger">تسجيل الخروج</button>
     </form>
 </div>
 <div class="mb-3">
     <form asp-controller="Admin" asp-action="GenerateNgrokLink" method="post" style="display:inline-block;">
-        <button type="submit" class="btn btn-primary">Generate Agents Public Link</button>
+        <button type="submit" class="btn btn-primary">إنشاء رابط عام للوكلاء</button>
     </form>
-    <form asp-controller="Admin" asp-action="StopNgrok" method="post" style="display:inline-block; margin-left:10px;">
-        <button type="submit" class="btn btn-warning">Stop Public link</button>
+    <form asp-controller="Admin" asp-action="StopNgrok" method="post" style="display:inline-block; margin-right:10px;">
+        <button type="submit" class="btn btn-warning">إيقاف الرابط العام</button>
     </form>
 </div>
 @if (ViewBag.AdminName != null)
 {
     <div class="alert alert-success text-center" role="alert">
-        Welcome, <strong>@ViewBag.AdminName</strong>!
+        مرحباً، <strong>@ViewBag.AdminName</strong>!
     </div>
 }
-<h2>Admin Dashboard</h2>
+<h2>لوحة تحكم المدير</h2>
 <div class="card mb-4">
-    <div class="card-header bg-info text-white">Add Task for Agent</div>
+    <div class="card-header bg-info text-white">إضافة مهمة للوكيل</div>
     <div class="card-body">
         <form asp-controller="Admin" asp-action="AddTask" method="post" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
-                <label for="AgentId" class="form-label">Agent</label>
+                <label for="AgentId" class="form-label">الوكيل</label>
                 <select class="form-select" id="AgentId" name="AgentId" required>
-                    <option value="">Select agent...</option>
+                    <option value="">اختر وكيل...</option>
                     @foreach (var agent in Model.Where(u => u.Role == "Agent"))
                     {
                         <option value="@agent.Id">@agent.Name (@agent.Email)</option>
@@ -38,15 +38,15 @@
                 </select>
             </div>
             <div class="col-12 col-md-3">
-                <label for="Title" class="form-label">Title</label>
+                <label for="Title" class="form-label">العنوان</label>
                 <input type="text" class="form-control" id="Title" name="Title" required />
             </div>
             <div class="col-12 col-md-3">
-                <label for="Description" class="form-label">Description</label>
+                <label for="Description" class="form-label">الوصف</label>
                 <input type="text" class="form-control" id="Description" name="Description" />
             </div>
             <div class="col-12 col-md-2">
-                <label for="DueDate" class="form-label">Due Date</label>
+                <label for="DueDate" class="form-label">تاريخ الاستحقاق</label>
                 <input type="date" class="form-control" id="DueDate" name="DueDate" required />
             </div>
             <div class="col-12 col-md-1">

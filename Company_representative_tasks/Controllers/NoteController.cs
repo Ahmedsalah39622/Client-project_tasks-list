@@ -9,6 +9,7 @@ using Argent_Company.Models;
 
 namespace Argent_Company.Controllers
 {
+
     public class NoteController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,6 +17,40 @@ namespace Argent_Company.Controllers
         public NoteController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        // POST: Note/CreateForTask
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateForTask(int TaskId, string Content)
+        {
+            // Get current admin user id from session
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                TempData["Error"] = "يجب تسجيل الدخول أولاً";
+                return RedirectToAction("Index", "Admin");
+            }
+
+            var user = await _context.Users.FindAsync(userId.Value);
+            var task = await _context.Tasks.FindAsync(TaskId);
+            if (user == null || task == null)
+            {
+                TempData["Error"] = "حدث خطأ أثناء إضافة الملاحظة";
+                return RedirectToAction("TaskNotes", "Admin", new { id = TaskId });
+            }
+            var note = new Note
+            {
+                Content = Content,
+                CreatedAt = DateTime.Now,
+                UserId = userId.Value,
+                User = user,
+                TaskId = TaskId,
+                Task = task
+            };
+            _context.Notes.Add(note);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("TaskNotes", "Admin", new { id = TaskId });
         }
 
         // GET: Note

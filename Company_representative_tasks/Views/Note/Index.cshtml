@@ -1,16 +1,16 @@
 @model IEnumerable<Argent_Company.Models.Note>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "جدول الملاحظات";
 }
 
-<h1>Index</h1>
+<h1>جدول الملاحظات</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p class="mb-4">
+    <a asp-action="Create" class="btn btn-primary">إضافة ملاحظة جديدة</a>
 </p>
-<div class="table-responsive">
-<table class="table table-striped align-middle mb-0">
+<div class="table-responsive shadow-sm rounded">
+<table class="table table-striped align-middle mb-0 bg-white">
     <thead>
         <tr>
             <th>
@@ -37,13 +37,25 @@
             <td>
                     @Html.DisplayFor(modelItem => item.User.Email)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            <td class="text-end">
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">تعديل</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info mx-1">تفاصيل</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">حذف</a>
             </td>
         </tr>
 }
     </tbody>
  </table>
 </div>
+
+@section Styles {
+    <style>
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+}

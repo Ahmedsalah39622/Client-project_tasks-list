@@ -54,6 +54,30 @@ namespace Argent_Company.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: Admin/TaskNotes/5
+        public async Task<IActionResult> TaskNotes(int id)
+        {
+            var task = await _context.Tasks
+                .Include(t => t.User)
+                .Include(t => t.Notes)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return View(task);
+
+            if (task == null)
+            {
+                TempData["Error"] = "المهمة غير موجودة";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(task);
+        }
+
         public async Task<IActionResult> Index()
         {
             var users = await _context.Users

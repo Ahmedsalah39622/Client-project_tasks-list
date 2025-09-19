@@ -47,9 +47,24 @@
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <form asp-action="MarkDone" method="post" style="display:inline-block; margin-left:10px;">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" name="TaskId" value="@item.Id" />
+                        <input type="number" name="CollectionAmount" value="@(item.CollectionAmount != 0 ? String.Format("{0:F2}", item.CollectionAmount) : "0.00")" placeholder="المبلغ المحصل" style="width:100px;" required step="0.01" />
+                        <button type="submit" class="btn btn-success btn-sm">حفظ</button>
+                            <button type="submit" class="btn btn-success btn-sm" onclick="setTimeout(function(){alert('تم الحفظ بنجاح');}, 100);">حفظ</button>
+                    </form>
             </td>
         </tr>
 }
     </tbody>
  </table>
 </div>
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        alert('@TempData["Success"]');
+    </script>
+}

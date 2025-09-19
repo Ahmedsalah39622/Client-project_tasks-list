@@ -13,5 +13,11 @@ namespace Argent_Company.Models
         public string Password { get; set; }
 
         public bool RememberMe { get; set; }
+
+        public LoginViewModel()
+        {
+            Email = string.Empty;
+            Password = string.Empty;
+        }
     }
 }

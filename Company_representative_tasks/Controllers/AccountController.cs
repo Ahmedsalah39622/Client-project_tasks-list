@@ -8,14 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Argent_Company.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using static Argent_Company.Models.Constants;
 
 namespace Argent_Company.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private const string SessionKeyUserId = "UserId";
-
         public AccountController(ApplicationDbContext context)
         {
             _context = context;
@@ -45,10 +44,10 @@ namespace Argent_Company.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(string name, string email, string password)
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Register(string agentName, string agentZone, string agentPhone, decimal moneyCollected, string email, string password)
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(agentName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 ModelState.AddModelError(string.Empty, "All fields are required.");
                 return View();
@@ -58,9 +57,19 @@ namespace Argent_Company.Controllers
                 ModelState.AddModelError(string.Empty, "Email already exists.");
                 return View();
             }
-            var user = new User { Name = name, Email = email, PasswordHash = password, Role = "Agent" };
+            var user = new User {
+                Name = agentName,
+                Email = email,
+                PasswordHash = password,
+                Role = "Agent",
+                AgentName = agentName,
+                AgentZone = agentZone,
+                AgentPhone = agentPhone,
+                MoneyCollected = moneyCollected
+            };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
             // Log registration
             var log = new UserLog
             {
@@ -122,6 +131,8 @@ namespace Argent_Company.Controllers
             if (userId == null) return RedirectToLogin();
             // Only show the logged-in user's info
             var user = await _context.Users.FirstOrDefaultAsync(a => a.Id == userId);
+            if (user == null)
+                return NotFound();
             return View(new List<User> { user });
         }
 

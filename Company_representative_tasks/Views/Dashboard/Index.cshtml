@@ -1,75 +1,963 @@
 
 @model Argent_Company.Models.DashboardViewModel
-
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "لوحة التحكم";
 }
 
+<!-- رأس تنقل حديث -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4" dir="rtl">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-tasks me-2"></i>لوحة تحكم المندوب
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#tasks">
+                        <i class="fas fa-list me-1"></i>المهام
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#notes">
+                        <i class="fas fa-sticky-note me-1"></i>الملاحظات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#invoices">
+                        <i class="fas fa-file-invoice-dollar me-1"></i>الفواتير
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-link position-relative" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        @if (Model.Tasks != null && Model.Tasks.Any(t => t.DueDate <= DateTime.Now.AddDays(1)))
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                !
+                            </span>
+                        }
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><h6 class="dropdown-header">الإشعارات</h6></li>
+                        @if (Model.Tasks != null)
+                        {
+                            foreach (var task in Model.Tasks.Where(t => t.DueDate <= DateTime.Now.AddDays(1)))
+                            {
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-exclamation-circle text-warning me-2"></i>@task.Title مستحق قريباً</a></li>
+                            }
+                        }
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-2"></i>
+                        @Model.UserName
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>الملف الشخصي</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
 
-<div class="text-end mb-3">
-    <form asp-controller="Account" asp-action="Logout" method="post">
-        <button type="submit" class="btn btn-danger">Logout</button>
-    </form>
-</div>
-<h1 class="mb-4 text-center">Dashboard</h1>
-@if (!string.IsNullOrEmpty(Model.UserName))
-{
-    <div class="alert alert-success text-center" role="alert">
-        Welcome, <strong>@Model.UserName</strong>!
+<!-- Quick Stats Section -->
+<div class="container-fluid mb-5">
+    <div class="row gy-4 gx-5 justify-content-center">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 bg-primary bg-gradient text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-4">
+                            <i class="fas fa-tasks fa-3x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-2">المهام النشطة</h6>
+                            <h3 class="mb-0 display-6 text-center">@(Model.Tasks != null ? Model.Tasks.Count() : 0)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 bg-success bg-gradient text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-4">
+                            <i class="fas fa-check-circle fa-3x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-2">المهام المنجزة</h6>
+                            <h3 class="mb-0 display-6 text-center">@(Model.Tasks != null ? Model.Tasks.Count(t => t.Status == "تم") : 0)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 bg-warning bg-gradient text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-4">
+                            <i class="fas fa-clock fa-3x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-2">مستحق قريباً</h6>
+                            <h3 class="mb-0 display-6 text-center">@(Model.Tasks != null ? Model.Tasks.Count(t => t.DueDate <= DateTime.Now.AddDays(1)) : 0)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 bg-info bg-gradient text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-sticky-note fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-0">الملاحظات</h6>
+                            <h3 class="mb-0 text-center">@(Model.Notes != null ? Model.Notes.Count() : 0)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-}
-<div class="container-fluid">
-    <div class="row g-3 justify-content-center">
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <span>Tasks</span>
-                    <button class="btn btn-sm btn-light d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#tasksCollapse">Show/Hide</button>
+</div>
+<!-- Main Content Area -->
+<div class="container-fluid mt-5">
+    <div class="row g-5">
+        <!-- Notes and Invoices Section -->
+        <div class="col-12 col-lg-4 order-1 order-lg-0">
+            <div class="row g-4">
+                <!-- Latest Notes -->
+                <div class="col-12">
+                    <div class="puzzle-section">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">أحدث الملاحظات</h5>
+                            <a href="@Url.Action("Create", "Note")" class="btn btn-primary btn-sm rounded-pill shadow-sm">
+                                <i class="fas fa-plus me-1"></i>إضافة ملاحظة
+                            </a>
+                        </div>
+                        <div class="content-area notes-scroll-area" style="height: 300px; overflow-y: auto;">
+                            @if (Model.Notes != null && Model.Notes.Any())
+                            {
+                                foreach (var note in Model.Notes.OrderByDescending(n => n.CreatedAt).Take(10))
+                                {
+                                    <div class="note-item p-3 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="note-content" style="max-width: 85%;">
+                                                <p class="mb-1" style="white-space: pre-wrap;">@note.Content</p>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>@note.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                                </small>
+                                            </div>
+                                            @if (note.TaskId > 0)
+                                            {
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-tasks me-1"></i>مرتبط بمهمة
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted p-4">
+                                    <i class="fas fa-sticky-note fa-2x mb-2"></i>
+                                    <p>لا توجد ملاحظات حتى الآن</p>
+                                </div>
+                            }
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <a href="@Url.Action("Index", "Note")" class="btn btn-link btn-sm text-decoration-none">عرض كل الملاحظات</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body collapse show" id="tasksCollapse">
-                    @await Html.PartialAsync("~/Views/Task/Index.cshtml", Model.Tasks)
+                <!-- Latest Invoices -->
+                <div class="col-12">
+                    <div class="puzzle-section">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">أحدث الفواتير</h5>
+                        </div>
+                        <div class="content-area" style="min-height: 100px;">
+                            <!-- Invoices content here -->
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <a href="@Url.Action("Index", "Invoice")" class="btn btn-link btn-sm text-decoration-none">عرض كل الفواتير</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <span>Invoices</span>
-                    <button class="btn btn-sm btn-light d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#invoicesCollapse">Show/Hide</button>
+        <!-- Tasks Section -->
+        <div class="col-12 col-lg-8 order-0 order-lg-1">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3" id="tasks">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">المهام</h5>
+                        
+                    </div>
                 </div>
-                <div class="card-body collapse show" id="invoicesCollapse">
-                    @await Html.PartialAsync("~/Views/Invoice/Index.cshtml", Model.Invoices)
+                <div class="card-body p-0">
+                    <!-- Uncompleted Tasks Table -->
+                    <h6 class="mt-3 mb-2">المهام التي لم تنجز</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>العنوان</th>
+                                    <th>تاريخ الاستحقاق</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Tasks != null)
+                                {
+                                    foreach (var task in Model.Tasks.Where(t => t.Status != "تم").OrderBy(t => t.DueDate))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="ms-2">
+                                                        <h6 class="mb-0">@task.Title</h6>
+                                                        <small class="text-muted">@(task.Description?.Length > 50 ? task.Description.Substring(0, 47) + "..." : task.Description)</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="@(task.DueDate <= DateTime.Now ? "text-danger" : "")">
+                                                    @task.DueDate.ToString("dd MMM, yyyy")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(task.DueDate <= DateTime.Now ? "bg-danger" : "bg-primary")">
+                                                    @(task.DueDate <= DateTime.Now ? "متأخر" : "نشط")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="@Url.Action("Edit", "Task", new { id = task.Id })" class="btn btn-sm btn-outline-primary rounded-pill" title="تعديل">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("Details", "Task", new { id = task.Id })" class="btn btn-sm btn-outline-info rounded-pill" title="التفاصيل">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill" onclick="showCollectionInput(@task.Id)">
+                                                        <i class="fas fa-check me-1"></i>تم
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="showNoteInput(@task.Id)" title="إضافة ملاحظة">
+                                                        <i class="fas fa-comment-dots"></i>
+                                                    </button>
+                                                </div>
+                                                <div id="note-input-@task.Id" style="display:none; margin-top:12px; position: relative;">
+                                                    <form id="note-form-@task.Id" method="post" action="@Url.Action("AddNote", "Task")" class="bg-light p-3 rounded-3 shadow-sm border">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="TaskId" value="@task.Id" />
+                                                        <div class="mb-3">
+                                                            <label for="NoteContent-@task.Id" class="form-label fw-bold mb-2">الملاحظة:</label>
+                                                            <textarea name="Content" id="NoteContent-@task.Id" class="form-control" rows="3" required 
+                                                                style="border-radius: 15px;" placeholder="اكتب ملاحظتك هنا..."></textarea>
+                                                        </div>
+                                                        <div class="d-flex justify-content-end gap-2">
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="document.getElementById('note-input-@task.Id').style.display='none'">
+                                                                <i class="fas fa-times me-1"></i>إلغاء
+                                                            </button>
+                                                            <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
+                                                                <i class="fas fa-save me-1"></i>حفظ
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                    <script>
+                                                    document.getElementById('note-form-@task.Id').addEventListener('submit', function(e) {
+                                                        e.preventDefault();
+                                                        var form = this;
+                                                        var formData = new FormData(form);
+                                                        var token = form.querySelector('input[name=__RequestVerificationToken]').value;
+                                                        
+                                                        // Hide form immediately
+                                                        const inputDiv = document.getElementById(`note-input-${form.querySelector('[name="TaskId"]').value}`);
+                                                        inputDiv.style.display = 'none';
+                                                        form.reset();
+
+                                                        // Show success icon immediately
+                                                        const successIcon = document.createElement('div');
+                                                        successIcon.className = 'success-icon';
+                                                        successIcon.innerHTML = '<i class="fas fa-check"></i>';
+                                                        document.body.appendChild(successIcon);
+
+                                                        // Remove success icon after animation
+                                                        setTimeout(() => {
+                                                            successIcon.remove();
+                                                        }, 1500);
+
+                                                        // Send the form data in the background
+                                                        fetch(form.action, {
+                                                            method: 'POST',
+                                                            body: formData,
+                                                            headers: { 
+                                                                'RequestVerificationToken': token
+                                                            }
+                                                        }).catch(error => {
+                                                            console.error('Error:', error);
+                                                            // If there's an error, show it briefly
+                                                            const errorDiv = document.createElement('div');
+                                                            errorDiv.className = 'alert alert-danger p-2 mt-2';
+                                                            errorDiv.textContent = 'حدث خطأ في حفظ الملاحظة';
+                                                            inputDiv.parentElement.appendChild(errorDiv);
+                                                            setTimeout(() => errorDiv.remove(), 3000);
+                                                        });
+                                                        .catch(error => {
+                                                            // Show error message
+                                                            const errorDiv = document.createElement('div');
+                                                            errorDiv.className = 'alert alert-danger p-2 mt-2 mb-0';
+                                                            errorDiv.innerHTML = `<small><i class="fas fa-exclamation-circle me-1"></i>${error.message}</small>`;
+                                                            form.appendChild(errorDiv);
+                                                            
+                                                            // Remove error message after 3 seconds
+                                                            setTimeout(() => {
+                                                                errorDiv.remove();
+                                                            }, 3000);
+                                                        });
+                                                        
+                                                        // Reset the form
+                                                        form.reset();
+
+                                                            // Add the new note to the latest notes section
+                                                            if (result && result.note) {
+                                                                const noteHtml = `<div class="card mb-2 shadow-sm">
+                                                                    <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+                                                                        <div>
+                                                                            <div class="fw-bold">${result.note.content}</div>
+                                                                            <small class="text-muted">${result.note.createdAt} - ${result.note.userName}</small>
+                                                                        </div>
+                                                                        <i class="fas fa-sticky-note text-info fa-lg"></i>
+                                                                    </div>
+                                                                </div>`;
+                                                                const notesArea = document.querySelector('.puzzle-section .content-area');
+                                                                if (notesArea) {
+                                                                    notesArea.insertAdjacentHTML('afterbegin', noteHtml);
+                                                                }
+                                                            }
+                                                        })
+                                                        .catch(err => {
+                                                            const errorDiv = document.createElement('div');
+                                                            errorDiv.className = 'alert alert-danger p-2 mt-2 mb-0';
+                                                            errorDiv.innerHTML = `<small><i class="fas fa-exclamation-circle me-1"></i>${err.message}</small>`;
+                                                            form.appendChild(errorDiv);
+                                                            
+                                                            setTimeout(() => {
+                                                                errorDiv.remove();
+                                                            }, 3000);
+                                                        });
+                                                    });
+                                                    </script>
+                                                </div>
+                                                <div id="collection-input-@task.Id" style="display:none; margin-top:12px; position: relative;">
+                                                    <form id="done-form-@task.Id" method="post" action="@Url.Action("MarkDone", "Task")" class="bg-light p-3 rounded-3 shadow-sm border">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="TaskId" value="@task.Id" />
+                                                        <div class="mb-3">
+                                                            <label for="CollectionAmount-@task.Id" class="form-label fw-bold mb-2">كمية التحصيل:</label>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" min="0" name="CollectionAmount" id="CollectionAmount-@task.Id" 
+                                                                    class="form-control form-control-sm rounded-start" 
+                                                                    style="border-top-right-radius: 20px !important; border-bottom-right-radius: 20px !important;"
+                                                                    required />
+                                                                <span class="input-group-text" style="border-top-left-radius: 20px; border-bottom-left-radius: 20px;">ج.م</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex justify-content-end gap-2">
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="document.getElementById('collection-input-@task.Id').style.display='none'">
+                                                                <i class="fas fa-times me-1"></i>إلغاء
+                                                            </button>
+                                                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                                                                <i class="fas fa-check me-1"></i>حفظ
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                    <script>
+                                                    document.getElementById('done-form-@task.Id').addEventListener('submit', function(e) {
+                                                        e.preventDefault();
+                                                        var form = this;
+                                                        var formData = new FormData(form);
+                                                        var token = form.querySelector('input[name=__RequestVerificationToken]').value;
+                                                        fetch(form.action, {
+                                                            method: 'POST',
+                                                            body: formData,
+                                                            headers: { 'X-Requested-With': 'XMLHttpRequest', 'RequestVerificationToken': token }
+                                                        })
+                                                        .then(async r => {
+                                                            if (r.ok) { return r.json ? r.json() : r.text(); }
+                                                            let msg = await r.text();
+                                                            throw new Error(msg || 'خطأ غير معروف');
+                                                        })
+                                                        .then(() => {
+                                                            // Hide the collection input form
+                                                            const inputDiv = document.getElementById(`collection-input-${form.querySelector('[name="TaskId"]').value}`);
+                                                            inputDiv.style.display = 'none';
+                                                            
+                                                            // Show success message
+                                                            const successDiv = document.createElement('div');
+                                                            successDiv.className = 'alert alert-success alert-dismissible fade show p-2 mt-2 mb-0';
+                                                            successDiv.innerHTML = `
+                                                                <small><i class="fas fa-check-circle me-1"></i>تم حفظ التحصيل بنجاح</small>
+                                                                <button type="button" class="btn-close btn-close-sm p-0 ms-2" data-bs-dismiss="alert"></button>
+                                                            `;
+                                                            
+                                                            // Insert success message after the button group
+                                                            const btnGroup = inputDiv.closest('td').querySelector('.btn-group');
+                                                            btnGroup.insertAdjacentElement('afterend', successDiv);
+                                                            
+                                                            // Remove success message after 3 seconds
+                                                            setTimeout(() => {
+                                                                successDiv.remove();
+                                                            }, 3000);
+                                                            
+                                                            // Clear the input
+                                                            form.reset();
+                                                        })
+                                                        .catch(err => {
+                                                            // Show error message below the form
+                                                            const errorDiv = document.createElement('div');
+                                                            errorDiv.className = 'alert alert-danger p-2 mt-2 mb-0';
+                                                            errorDiv.innerHTML = `<small><i class="fas fa-exclamation-circle me-1"></i>${err.message}</small>`;
+                                                            form.appendChild(errorDiv);
+                                                            
+                                                            // Remove error message after 3 seconds
+                                                            setTimeout(() => {
+                                                                errorDiv.remove();
+                                                            }, 3000);
+                                                        });
+                                                    });
+                                                    </script>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Completed Tasks Table -->
+                    <h6 class="mt-4 mb-3">المهام المنجزة</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>العنوان</th>
+                                    <th>تاريخ الاستحقاق</th>
+                                    <th>كمية التحصيل</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Tasks != null)
+                                {
+                                    foreach (var task in Model.Tasks.Where(t => t.Status == "تم").OrderByDescending(t => t.DueDate))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="ms-2">
+                                                        <h6 class="mb-0">@task.Title</h6>
+                                                        <small class="text-muted">@(task.Description?.Length > 50 ? task.Description.Substring(0, 47) + "..." : task.Description)</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="text-muted">@task.DueDate.ToString("dd MMM, yyyy")</div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                                    <span class="fw-bold">@(task.CollectionAmount.HasValue ? task.CollectionAmount.Value.ToString("N2") : "-") ج.م</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success rounded-pill">
+                                                    <i class="fas fa-check me-1"></i>تم
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                    <span>Notes</span>
-                    <button class="btn btn-sm btn-light d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#notesCollapse">Show/Hide</button>
-                </div>
-                <div class="card-body collapse show" id="notesCollapse">
-                    @await Html.PartialAsync("~/Views/Note/Index.cshtml", Model.Notes)
-                </div>
-            </div>
-        </div>
+
+        <!-- Side Section removed -->
     </div>
 </div>
+
 <style>
-    .card { border-radius: 1rem; }
-    .card-header { font-size: 1.25rem; font-weight: 600; }
-    @@media (max-width: 767px) {
-        .card-body { padding: 0.5rem; }
-        .table { font-size: 0.95rem; }
+    .puzzle-section {
+        margin-bottom: 1.5rem;
+    }
+    .row.g-3 > [class*='col-'] {
+        margin-bottom: 5rem;
+    }
+    .puzzle-section h5 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    .puzzle-section .btn-primary {
+        min-width: 110px;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    .puzzle-section .btn-link {
+        font-size: 0.95rem;
+        color: #1976d2;
+        font-weight: 500;
+        padding-right: 0;
+    }
+    .puzzle-section {
+        background: #fff;
+        border-radius: 18px 18px 32px 18px/18px 18px 18px 32px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 2rem 1.5rem;
+        margin-bottom: 2.5rem;
+        margin-bottom: 1.5rem;
+        min-height: 120px;
+        position: relative;
+    }
+    body {
+        font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+        direction: rtl;
+        text-align: right;
+        margin: 0;
+        background: #f7f7f7;
+    }
+    
+    /* Elegant button styles */
+    .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .btn-outline-success:hover,
+    .btn-outline-primary:hover,
+    .btn-outline-info:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .rounded-pill {
+        padding-right: 1rem !important;
+        padding-left: 1rem !important;
+    }
+    
+    .btn-sm.rounded-pill {
+        padding-right: 0.8rem !important;
+        padding-left: 0.8rem !important;
+    }
+    
+    /* Collection form styling */
+    #collection-input-form {
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .form-control.rounded-pill {
+        height: calc(1.5em + 0.75rem);
+        padding-right: 1rem;
+        padding-left: 1rem;
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control.rounded-pill:focus,
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.15);
+        border-color: #80bdff;
+    }
+    
+    .input-group .form-control:focus {
+        border-color: #80bdff !important;
+        z-index: 3;
+    }
+    
+    .input-group .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+    
+    /* Collection form animations */
+    #collection-input-form {
+        animation: slideDown 0.3s ease-out;
+    }
+    
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Button hover states */
+    .btn-outline-success:hover {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+    
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+    
+    /* Task action buttons spacing */
+    .btn-group > .btn {
+        margin-right: 4px;
+    }
+    
+    /* Completed tasks styles */
+    .table td {
+        padding: 1rem 0.75rem;
+    }
+    
+    .table h6 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .table small {
+        font-size: 0.85rem;
+    }
+    
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.85em;
+    }
+    
+    .badge.rounded-pill {
+        font-size: 0.85rem;
+    }
+    
+    .badge.bg-success {
+        background-color: #28a745 !important;
+    }
+    
+    .text-success {
+        color: #28a745 !important;
+    }
+    
+    .table .fw-bold {
+        color: #2d3748;
+    }
+    
+    .table .text-muted {
+        color: #6c757d !important;
+    }
+    
+    /* Money amount icon */
+    .fa-money-bill-wave {
+        font-size: 1.1rem;
+    }
+    
+    /* Alert styles */
+    .alert {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .btn-close-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem !important;
+    }
+    
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .navbar {
+        box-shadow: 0 2px 4px rgba(0,0,0,.08);
+    }
+    .card {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+        border-radius: .5rem;
+        transition: transform .2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    .table th {
+        font-weight: 600;
+        color: #444;
+    }
+    .btn-group .btn {
+        padding: .25rem .5rem;
+    }
+    .list-group-item {
+        padding: 1rem;
+    }
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    }
+    media (max-width: 991.98px) {
+        .navbar-nav {
+            margin-top: 1rem;
+        }
+        .dropdown-menu {
+            border: 1px solid rgba(0,0,0,.15);
+            box-shadow: none;
+        }
+            media (max-width: 991.98px) {
+                .navbar-nav {
+                    margin-top: 1rem;
+                }
+                .dropdown-menu {
+                    border: 1px solid rgba(0,0,0,.15);
+                    box-shadow: none;
+                }
+            }
     }
 </style>
-<script>
-    // Optionally, auto-collapse cards on mobile
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.innerWidth < 768) {
-            document.querySelectorAll('.card-body').forEach(function(el) {
-                el.classList.remove('show');
+
+@section Scripts {
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script>
+        function showNoteInput(taskId) {
+            // Hide all other inputs first
+            document.querySelectorAll('[id^="collection-input-"], [id^="note-input-"]').forEach(el => {
+                if (el.id !== `note-input-${taskId}`) {
+                    el.style.display = 'none';
+                }
+            });
+            
+            // Toggle the clicked note input
+            const inputDiv = document.getElementById(`note-input-${taskId}`);
+            if (inputDiv.style.display === 'none') {
+                inputDiv.style.display = 'block';
+                // Focus on the textarea
+                setTimeout(() => {
+                    document.getElementById(`NoteContent-${taskId}`).focus();
+                }, 100);
+            } else {
+                inputDiv.style.display = 'none';
+            }
+        }
+
+        function submitNote(taskId) {
+            const form = document.getElementById(`note-form-${taskId}`);
+            const content = document.getElementById(`NoteContent-${taskId}`).value.trim();
+            
+            if (!content) {
+                alert('الرجاء إدخال محتوى الملاحظة');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('TaskId', taskId);
+            formData.append('Content', content);
+
+            const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': token
+                }
+            })
+            .then(async r => {
+                if (r.ok) { return r.json(); }
+                let msg = await r.text();
+                throw new Error(msg || 'خطأ غير معروف');
+            })
+            .then(result => {
+                if (result.success) {
+                    // Hide the form
+                    document.getElementById(`note-input-${taskId}`).style.display = 'none';
+                    
+                    // Show success message
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'alert alert-success alert-dismissible fade show p-2 mt-2 mb-0';
+                    successDiv.innerHTML = `
+                        <small><i class="fas fa-check-circle me-1"></i>تم حفظ الملاحظة بنجاح</small>
+                        <button type="button" class="btn-close btn-close-sm p-0 ms-2" data-bs-dismiss="alert"></button>
+                    `;
+                    
+                    // Insert success message after the button group
+                    const btnGroup = form.closest('td').querySelector('.btn-group');
+                    btnGroup.insertAdjacentElement('afterend', successDiv);
+                    
+                    // Remove success message after 3 seconds
+                    setTimeout(() => {
+                        successDiv.remove();
+                    }, 3000);
+                    
+                    // Clear the form
+                    form.reset();
+                }
+            })
+            .catch(err => {
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger p-2 mt-2 mb-0';
+                errorDiv.innerHTML = `<small><i class="fas fa-exclamation-circle me-1"></i>${err.message}</small>`;
+                form.appendChild(errorDiv);
+                
+                // Remove error message after 3 seconds
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 3000);
             });
         }
-    });
-</script>
+            
+            // Toggle the clicked note input
+            const inputDiv = document.getElementById(`note-input-${taskId}`);
+            if (inputDiv.style.display === 'none') {
+                inputDiv.style.display = 'block';
+                // Focus on the textarea
+                setTimeout(() => {
+                    document.getElementById(`NoteContent-${taskId}`).focus();
+                }, 100);
+            } else {
+                inputDiv.style.display = 'none';
+            }
+        }
+
+        function showCollectionInput(taskId) {
+            // Hide all other inputs first
+            document.querySelectorAll('[id^="collection-input-"], [id^="note-input-"]').forEach(el => {
+                if (el.id !== `collection-input-${taskId}`) {
+                    el.style.display = 'none';
+                }
+            });
+            
+            // Toggle the clicked collection input
+            const inputDiv = document.getElementById(`collection-input-${taskId}`);
+            if (inputDiv.style.display === 'none') {
+                inputDiv.style.display = 'block';
+                // Focus on the input field
+                setTimeout(() => {
+                    document.getElementById(`CollectionAmount-${taskId}`).focus();
+                }, 100);
+            } else {
+                inputDiv.style.display = 'none';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Active link handling
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Close collection input when clicking outside
+            document.addEventListener('click', function(event) {
+                const collectionInputs = document.querySelectorAll('[id^="collection-input-"]');
+                const isClickInside = Array.from(collectionInputs).some(el => el.contains(event.target));
+                const isDoneButton = event.target.closest('.btn-outline-success');
+                
+                if (!isClickInside && !isDoneButton) {
+                    collectionInputs.forEach(el => el.style.display = 'none');
+                }
+            });
+        });
+
+        function markTaskAsCompleted(taskId) {
+            if (!confirm('هل أنت متأكد من إتمام هذه المهمة؟')) {
+                return;
+            }
+
+            fetch(`/Task/MarkAsCompleted/${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh the page to show updated status
+                    location.reload();
+                } else {
+                    alert(data.message || 'حدث خطأ أثناء تحديث حالة المهمة');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء تحديث حالة المهمة');
+            });
+        }
+    </script>
+}

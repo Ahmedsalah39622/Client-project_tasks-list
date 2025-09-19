@@ -1,0 +1,59 @@
+@model Argent_Company.Models.Task
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">تفاصيل المهمة: @Model.Title</h4>
+        <a href="@Url.Action("Index", "Admin")" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-right me-1"></i>عودة للوحة التحكم
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>العنوان:</strong> @Model.Title</p>
+                    <p><strong>المندوب:</strong> @(Model.User?.Name ?? "غير محدد")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>الحالة:</strong> @Model.Status</p>
+                    <p><strong>المبلغ المحصل:</strong> @(Model.CollectionAmount?.ToString("N2") ?? "0.00") ريال</p>
+                </div>
+            </div>
+            <p><strong>الوصف:</strong> @Model.Description</p>
+        </div>
+    </div>
+
+    <h5 class="mb-3">الملاحظات</h5>
+    @if (Model.Notes != null && Model.Notes.Any())
+    {
+        foreach (var note in Model.Notes)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>@note.Content</strong>
+                        <small class="text-muted">@note.CreatedAt.ToShortDateString()</small>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>لا توجد ملاحظات لهذه المهمة
+        </div>
+    }
+
+    <hr />
+    <h5 class="mb-3">إضافة ملاحظة جديدة</h5>
+    <form asp-controller="Note" asp-action="CreateForTask" method="post">
+        <input type="hidden" name="TaskId" value="@Model.Id" />
+        <div class="mb-3">
+            <label for="Content" class="form-label">الملاحظة</label>
+            <textarea class="form-control" id="Content" name="Content" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">إضافة ملاحظة</button>
+    </form>
+</div>

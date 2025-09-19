@@ -1,9 +1,9 @@
-C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Company_representative_tasks.exe
+C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Argent_Company.exe
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\appsettings.Development.json
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\appsettings.json
-C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Company_representative_tasks.dll
-C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Company_representative_tasks.runtimeconfig.json
-C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Company_representative_tasks.pdb
+C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Argent_Company.dll
+C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Argent_Company.runtimeconfig.json
+C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Argent_Company.pdb
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Azure.Core.dll
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Azure.Identity.dll
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Humanizer.dll
@@ -227,4 +227,4 @@ C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\runti
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
-C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Company_representative_tasks.deps.json
+C:\Users\Ahmed Mahmoud\Desktop\Eng Osama Client project_tasks list\publish\Argent_Company.deps.json
