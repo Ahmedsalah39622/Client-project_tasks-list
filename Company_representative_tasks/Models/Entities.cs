@@ -36,24 +36,38 @@ namespace Argent_Company.Models
         public required string Title { get; set; }
         public string? Description { get; set; }
         public DateTime DueDate { get; set; }
+        public DateTime? CompletedDate { get; set; }
         public int UserId { get; set; }
         public required User User { get; set; }
         public string Status { get; set; } = "نشط"; // "نشط" or "منجز"
-    [Precision(18, 2)]
-    public decimal? CollectionAmount { get; set; }
+        [Precision(18, 2)]
+        public decimal? CollectionAmount { get; set; }
         public ICollection<Note> Notes { get; set; } = new List<Note>();
     }
 
     public class Invoice
     {
         public int Id { get; set; }
+        
         [Required]
         public required string Number { get; set; }
-    [Precision(18, 2)]
-    public decimal Amount { get; set; }
+
+        [Precision(18, 2)]
+        public decimal Amount { get; set; }
+        
         public DateTime Date { get; set; }
+        
+        public DateTime? CollectionDate { get; set; }
+        
+        [Required]
+        public string Status { get; set; } = "معلق"; // معلق، تم التحصيل
+        
         public int UserId { get; set; }
         public required User User { get; set; }
+        
+        public string? Notes { get; set; }
+        
+        public string? CustomerName { get; set; }
     }
 
     public class Note

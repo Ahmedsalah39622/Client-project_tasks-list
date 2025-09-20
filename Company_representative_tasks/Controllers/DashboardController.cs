@@ -30,12 +30,24 @@ namespace Argent_Company.Controllers
             {
                 return RedirectToAction("Index", "Admin");
             }
+            var today = DateTime.Today;
+
+            // Get today's collections from completed tasks
+            var todayCollections = await _context.Tasks
+                .Where(t => t.UserId == userId && 
+                           t.Status == "تم" && 
+                           t.CollectionAmount > 0 &&
+                           t.CompletedDate.HasValue && 
+                           t.CompletedDate.Value.Date == today)
+                .SumAsync(t => t.CollectionAmount ?? 0);
+
             var viewModel = new DashboardViewModel
             {
                 Tasks = await _context.Tasks.Include(t => t.User).Where(t => t.UserId == userId).ToListAsync(),
                 Invoices = await _context.Invoices.Include(i => i.User).Where(i => i.UserId == userId).ToListAsync(),
                 Notes = await _context.Notes.Include(n => n.User).Where(n => n.UserId == userId).ToListAsync(),
-                UserName = user.Name
+                UserName = user.Name,
+                TodayTotalCollections = todayCollections
             };
             return View(viewModel);
         }

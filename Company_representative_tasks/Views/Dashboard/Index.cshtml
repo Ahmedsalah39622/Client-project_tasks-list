@@ -142,7 +142,9 @@
             </div>
         </div>
     </div>
+
 </div>
+
 <!-- Main Content Area -->
 <div class="container-fluid mt-5">
     <div class="row g-5">
@@ -154,9 +156,11 @@
                     <div class="puzzle-section">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0">أحدث الملاحظات</h5>
-                            <a href="@Url.Action("Create", "Note")" class="btn btn-primary btn-sm rounded-pill shadow-sm">
-                                <i class="fas fa-plus me-1"></i>إضافة ملاحظة
-                            </a>
+                            <div class="d-flex align-items-center">
+                                <a href="@Url.Action("Create", "Note")" class="btn btn-primary btn-sm rounded-pill shadow-sm me-2">
+                                    <i class="fas fa-plus me-1"></i>إضافة ملاحظة
+                                </a>
+                            </div>
                         </div>
                         <div class="content-area notes-scroll-area" style="height: 300px; overflow-y: auto;">
                             @if (Model.Notes != null && Model.Notes.Any())
@@ -216,7 +220,9 @@
                 <div class="card-header bg-white py-3" id="tasks">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">المهام</h5>
-                        
+                        <div class="btn btn-success btn-sm rounded-pill shadow-sm">
+                            <i class="fas fa-money-bill-wave me-1"></i>@Model.TodayTotalCollections.ToString("#,##0.00") ج.م
+                        </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -241,7 +247,15 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="ms-2">
-                                                        <h6 class="mb-0">@task.Title</h6>
+                                                        <div class="d-flex align-items-center">
+                                                            <h6 class="mb-0">@task.Title</h6>
+                                                            @if (task.CollectionAmount > 0)
+                                                            {
+                                                                <div class="btn btn-success btn-sm rounded-pill shadow-sm ms-2" style="font-size: 0.8rem;">
+                                                                    <i class="fas fa-money-bill-wave me-1"></i>@task.CollectionAmount?.ToString("#,##0.00") ج.م
+                                                                </div>
+                                                            }
+                                                        </div>
                                                         <small class="text-muted">@(task.Description?.Length > 50 ? task.Description.Substring(0, 47) + "..." : task.Description)</small>
                                                     </div>
                                                 </div>
@@ -371,6 +385,8 @@
                                                                 errorDiv.remove();
                                                             }, 3000);
                                                         });
+                                                           // Reload the page after successful save
+                                                           location.reload();
                                                     });
                                                     </script>
                                                 </div>
@@ -437,6 +453,8 @@
                                                             
                                                             // Clear the input
                                                             form.reset();
+                                                               // Reload the page after successful save
+                                                               location.reload();
                                                         })
                                                         .catch(err => {
                                                             // Show error message below the form

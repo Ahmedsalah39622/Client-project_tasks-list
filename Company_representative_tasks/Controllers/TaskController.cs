@@ -231,6 +231,7 @@ namespace Argent_Company.Controllers
 
             task.Status = "تم";
             task.CollectionAmount = model.CollectionAmount;
+            task.CompletedDate = DateTime.Now;
 
             try
             {

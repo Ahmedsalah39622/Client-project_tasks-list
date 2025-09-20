@@ -9,5 +9,8 @@ namespace Argent_Company.Models
         public IEnumerable<Note>? Notes { get; set; }
         public string? UserName { get; set; }
         public string? NgrokUrl { get; set; }
+
+        // Today's Collection Total
+        public decimal TodayTotalCollections { get; set; }
     }
 }
