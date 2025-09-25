@@ -2,9 +2,8 @@
 
 A comprehensive task management system designed to streamline the organization and tracking of client project tasks.
 
+![Version](https://img.shields.io/badge/version-1.0.0-blue) ![License](https://img.shields.io/badge/license-Unlicensed-lightgrey) ![Stars](https://img.shields.io/github/stars/Client-project_tasks-list?style=social) ![Forks](https://img.shields.io/github/forks/Client-project_tasks-list?style=social)
 
-
-![Project Preview](Screenshot%202025-09-10%20142704.png)
 
 
 ## ✨ Features
