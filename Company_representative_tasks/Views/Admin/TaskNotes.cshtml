@@ -14,6 +14,7 @@
                 <div class="col-md-6">
                     <p><strong>العنوان:</strong> @Model.Title</p>
                     <p><strong>المندوب:</strong> @(Model.User?.Name ?? "غير محدد")</p>
+                        <p><strong>رقم المهمة:</strong> @Model.Id</p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>الحالة:</strong> @Model.Status</p>
@@ -32,8 +33,14 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <strong>@note.Content</strong>
-                        <small class="text-muted">@note.CreatedAt.ToShortDateString()</small>
+                            <div>
+                                @if (note.TaskId > 0)
+                                {
+                                    <a href="/Admin/TaskNotes/@note.TaskId" class="text-info fw-bold me-2" style="text-decoration:none;">#@note.TaskId</a>
+                                }
+                                <span>@note.Content</span>
+                            </div>
+                            <small class="text-muted">@note.CreatedAt.ToShortDateString()</small>
                     </div>
                 </div>
             </div>

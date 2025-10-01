@@ -24,6 +24,13 @@
                 {
                     <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
                 }
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div class="alert alert-danger">@error.ErrorMessage</div>
+                        }
+                    }
                 <form asp-action="Login" method="post" class="mb-4">
                     <div class="mb-3">
                         <label for="Email" class="form-label">Email</label>

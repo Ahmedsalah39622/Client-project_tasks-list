@@ -4,8 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Argent_Company</RootNamespace>
-    <AssemblyName>Argent_Company</AssemblyName>
+    <RootNamespace>Urgent_Company</RootNamespace>
+    <AssemblyName>Urgent_Company</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

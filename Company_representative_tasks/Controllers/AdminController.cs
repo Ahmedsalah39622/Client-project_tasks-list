@@ -1,3 +1,4 @@
+
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +16,26 @@ namespace Argent_Company.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddTask(int AgentId, string Title, string? Description, DateTime DueDate)
+    public async Task<IActionResult> AddTask(int AgentId, string Title, string? Description, DateTime DueDate, decimal CollectionAmount)
         {
+            if (string.IsNullOrWhiteSpace(Title))
+                ModelState.AddModelError("Title", "يجب إدخال العنوان.");
+            if (CollectionAmount <= 0)
+                ModelState.AddModelError("CollectionAmount", "يجب إدخال المطلوب سداده بشكل صحيح.");
+            if (DueDate.Date < DateTime.Today)
+                ModelState.AddModelError("DueDate", "يجب أن يكون تاريخ الاستحقاق اليوم أو في المستقبل.");
+
             var agent = await _context.Users.FirstOrDefaultAsync(u => u.Id == AgentId && u.Role == "Agent");
             if (agent == null)
+                ModelState.AddModelError("AgentId", "Agent not found.");
+
+            if (!ModelState.IsValid)
+                return View("Index", _context.Users.ToList());
+
+            if (agent == null)
             {
-                TempData["NgrokOutput"] = "Agent not found.";
-                return RedirectToAction("Index");
+                // This should never happen due to earlier validation, but prevents CS8602 warning
+                return View("Index", _context.Users.ToList());
             }
             var task = new Argent_Company.Models.Task
             {
@@ -29,7 +43,9 @@ namespace Argent_Company.Controllers
                 Description = Description,
                 DueDate = DueDate,
                 UserId = agent.Id,
-                User = agent
+                User = agent,
+                CollectionAmount = CollectionAmount,
+                Status = "Pending"
             };
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
@@ -66,15 +82,6 @@ namespace Argent_Company.Controllers
             {
                 return NotFound();
             }
-
-            return View(task);
-
-            if (task == null)
-            {
-                TempData["Error"] = "المهمة غير موجودة";
-                return RedirectToAction(nameof(Index));
-            }
-
             return View(task);
         }
 
@@ -142,7 +149,7 @@ namespace Argent_Company.Controllers
             {
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.FileName = ngrokPath;
-                process.StartInfo.Arguments = $"http 5000 --config \"{ngrokConfig}\"";
+                process.StartInfo.Arguments = $"http 8080 --config \"{ngrokConfig}\"";
                 process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(ngrokPath);
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.CreateNoWindow = true;
@@ -150,7 +157,6 @@ namespace Argent_Company.Controllers
                 process.StartInfo.RedirectStandardError = true;
                 process.Start();
 
-                // Write output to file asynchronously
                 System.Threading.Tasks.Task.Run(() => {
                     using (var writer = new System.IO.StreamWriter(outputFile, false))
                     {

@@ -26,6 +26,13 @@
 <div class="card mb-4">
     <div class="card-header bg-info text-white">إضافة مهمة للوكيل</div>
     <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div class="alert alert-danger">@error.ErrorMessage</div>
+                }
+            }
         <form asp-controller="Admin" asp-action="AddTask" method="post" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
                 <label for="AgentId" class="form-label">الوكيل</label>
@@ -41,6 +48,10 @@
                 <label for="Title" class="form-label">العنوان</label>
                 <input type="text" class="form-control" id="Title" name="Title" required />
             </div>
+                <div class="col-12 col-md-2">
+                    <label for="CollectionAmount" class="form-label">المطلوب سداده</label>
+                    <input type="number" step="0.01" class="form-control" id="CollectionAmount" name="CollectionAmount" required />
+                </div>
             <div class="col-12 col-md-3">
                 <label for="Description" class="form-label">الوصف</label>
                 <input type="text" class="form-control" id="Description" name="Description" />
@@ -89,8 +100,9 @@
                     <ul class="list-unstyled">
                     @foreach (var task in user.Tasks ?? new List<Argent_Company.Models.Task>())
                     {
-                        <li class="d-flex align-items-center justify-content-between mb-1">
-                            <span>@task.Title</span>
+                            <li class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="me-2 text-info">#@task.Id</span>
+                                <span>@task.Title</span>
                             <form asp-controller="Admin" asp-action="RemoveTask" method="post" style="display:inline;">
                                 <input type="hidden" name="TaskId" value="@task.Id" />
                                 <button type="submit" class="btn btn-sm btn-danger ms-2" title="Remove Task">&times;</button>
